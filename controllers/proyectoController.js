@@ -1,9 +1,18 @@
+// importamos modelo
+const Proyectos = require('../models/Proyectos');
+
+// importamos slug, este paquete cambia los espacios en blanco por guiones medios
+//const slug = require('slug');
+
 // generamos las vistas 
-exports.proyectosHome = (req,res)=>{
+exports.proyectosHome = async (req,res)=>{
 	// sin engine template pug: res.send('Index');
-res.render('index',{
-	nombrePagina: 'Proyectos'
-});
+	//const proyectos = await Proyectos.findAll();  // Consulta los registros de la tabla proyectos
+	
+	res.render('index',{
+		nombrePagina: 'Proyectos',
+		//proyectos                   // Manda los resultados a la vista.
+	});
 }
 
 exports.formularioProyecto = (req, res)=>{
@@ -12,7 +21,7 @@ exports.formularioProyecto = (req, res)=>{
 	});
 }
 
-exports.nuevoProyecto = (req, res) => {
+exports.nuevoProyecto = async (req, res) => {
 	//res.send('Enviaste el formulario');
 	// enviar a la consola lo que el usuario escriba
 	//console.log(req.body);
@@ -34,6 +43,12 @@ exports.nuevoProyecto = (req, res) => {
 	} else {
 		// no hay errores
 		// inserta en la BD.
+		//console.log(slug(nombre).toLowerCase());
+		//const url = slug(nombre).toLowerCase();
+		const proyecto = await Proyectos.create({nombre})
+			.then(() => console.log('Insertado Correctamente'))
+			.catch(error => console.log(error));
+		res.redirect('/');
 	}
 }
 
