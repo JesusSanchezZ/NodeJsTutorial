@@ -1,11 +1,11 @@
 const Sequelize = require('sequelize');
 const db = require('../config/db');
 
-const slug = require('slug');
+const slug = require('slug');          // elimina espacios en blanco y agrega guiones medios
 const shortid = require('shortid');    // agrega texto aleatoria a una cadena
 
 
-const Proyectos = db.define('proyectos1',{
+const Proyectos = db.define('proyectos',{
 	id: {
 		type: Sequelize.INTEGER,
 		primaryKey: true,
@@ -14,8 +14,8 @@ const Proyectos = db.define('proyectos1',{
 	nombre: Sequelize.STRING,
 	url : Sequelize.STRING
 }, {
-	hooks: {
-		beforeCreate(proyecto){
+	hooks: {                          // hooks ejecutan una funcion en determinado tiempo
+		beforeCreate(proyecto){       // antes de crear ejecuta lo siguiente
 			const url = slug(proyecto.nombre).toLowerCase();
 			proyecto.url = `${url}-${shortid.generate()}`;
 			console.log(proyecto.url);

@@ -1,1 +1,3 @@
-exports.vardump = (objeto) => JSON.stringify(objetob, null, 2)
+exports.vardump = (objeto) => JSON.stringify(objeto, null, 2)
+
+// Muestra los resultados de una consulta

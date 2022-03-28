@@ -8,6 +8,13 @@
 // paquete para conexion a bd mongodb: npm install --save mongoose
 // paquetes para MySql: npm install --save mysql2 sequelize
 // Seccion 11-33
+// instalación del paquete babel-loader para la eliminación de los proyectos
+// npm install -D babel-loader @babel/core @babel/preset-env webpack
+// también se instala el paquete concurrently
+// npm install --save concurrently
+// instalacion de paquetes para confirmar borrado de archivos
+// npm install --save axios sweetalert2
+
 //import express from 'express';
 const express = require('express');
 const routes = require('./routes');
@@ -22,10 +29,15 @@ const db = require('./config/db');
 
 // Importamos el modelo
 require('./models/proyectos');
-
-//db.sync()
+// Con este metodo solo se conecta a la BD
+//db.authenticate()
 //	.then(() => console.log('Conectado al servidor'))
 //	.catch(error => console.log(error));
+
+// con este mètodo  modifica la BD, crea estructura de la BD
+db.sync()
+	.then(() => console.log('Conectado al servidor'))
+	.catch(error => console.log(error));
 
 /*db.authenticate()
 	.then(() => console.log('Conectado al Servidor'))
@@ -46,6 +58,14 @@ app.set('views', path.join(__dirname, './views'));
 // pasar var dump a la aplicación
 app.use((req, res, next) => {
 	res.locals.vardump = helpers.vardump;     // creación de variable localName
+	next();
+});
+
+// Aprendiendo Middleware
+
+// al ejecutar una consulta y no tener resultado con next() pasas a otro proceso
+app.use((req, res, next)=> {
+	console.log('Yo soy middleware');
 	next();
 });
 
