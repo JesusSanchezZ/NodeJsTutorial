@@ -1,5 +1,6 @@
 // importamos modelo
 const Proyectos = require('../models/Proyectos');
+const Tareas = require('../Models/Tareas');
 
 // importamos slug, este paquete cambia los espacios en blanco por guiones medios
 //const slug = require('slug');
@@ -75,13 +76,26 @@ exports.proyectoPorUrl = async (req, res, next) => {
 
 	const [proyectos, proyecto] = await Promise.all([proyectosPromise, proyectoPromise]);
 
+	// Consultar tareas del proyecto actual
+	const tareas = await Tareas.findAll({
+		where: {
+			proyectoId : proyecto.id
+		}/*,
+		include: [
+			{
+				model : Proyectos
+			}
+		]*/
+	});
+
 	if(!proyecto) return next();
 
 	// renderizamos la vista
 	res.render('tareas', {
 		nombrePagina: 'Tareas del proyecto',
 		proyecto,
-		proyectos
+		proyectos,
+		tareas
 	})
 	//console.log(proyecto);
 	//res.send('Ok');
@@ -154,3 +168,21 @@ exports.actualizarProyecto = async (req, res) => {
 		res.redirect('/');
 	}
 }
+
+exports.eliminarProyecto = async (req, res, next) => {
+	// req, query o params 
+	//console.log(req.query);
+	const {urlProyecto} = req.query;
+
+	const resultado = await Proyectos.destroy({
+		where: {
+			url: urlProyecto
+		}
+	});
+
+	if(!resultado){
+		return next();
+	}
+
+	res.status(200).send('Proyecto eliminado Correctamente');
+} 

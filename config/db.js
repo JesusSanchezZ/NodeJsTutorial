@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const userName = 'root';
-const password = 'Sazj840110';
+const password = 'Mca@66940$2022';
 const hostName = '172.17.6.102';
 const sampleDBName = 'proyectosNode';
 

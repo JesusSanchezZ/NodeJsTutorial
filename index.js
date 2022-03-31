@@ -15,11 +15,24 @@
 // instalacion de paquetes para confirmar borrado de archivos
 // npm install --save axios sweetalert2
 
+// Instalamos libreria para hasheo de claves
+// npm install --save bcrypt-nodejs
+
+// Instalamos libreria para pasar mensajes a las vistas
+// npm install --save connect-flash
+
+// Instalamos paqueteria para poder visualizar los errores mandados por flash
+// npm install --save cookie-parser express-session
+
 //import express from 'express';
 const express = require('express');
 const routes = require('./routes');
 const path = require('path');         // importamos paquete de rutas del entorno
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 // helpers con algunas funciones
 const helpers = require('./helpers');
@@ -29,6 +42,9 @@ const db = require('./config/db');
 
 // Importamos el modelo
 require('./models/proyectos');
+require('./Models/Tareas');
+require('./Models/Ususarios');
+
 // Con este metodo solo se conecta a la BD
 //db.authenticate()
 //	.then(() => console.log('Conectado al servidor'))
@@ -49,15 +65,32 @@ const app = express();
 // Donde cargar los archivos estaticos
 app.use(express.static('public'));
 
+// habilitar bodyParser para leer datos del formulario
+app.use(bodyParser.urlencoded({extended: true}));
+
+// Agregamos express validator a toda la aplicación
+//app.use(expressValidator());
+
 // habilitamos pug
 app.set('view engine', 'pug');
 
 // añadimos carpeta de las vistas
 app.set('views', path.join(__dirname, './views'));
 
+// Agregamos flash messages
+app.use(flash());
+
+// sesiones nos permite navegar entre distintas paginas sin volvernos a autenticar
+app.use(session({
+	secret: 'supersecreto',
+	resave: false,
+	saveUninitialized: false
+}))
+
 // pasar var dump a la aplicación
 app.use((req, res, next) => {
 	res.locals.vardump = helpers.vardump;     // creación de variable localName
+	res.locals.mensajes = req.flash();        // Variable local para almacenar mensajes
 	next();
 });
 
@@ -68,9 +101,6 @@ app.use((req, res, next)=> {
 	console.log('Yo soy middleware');
 	next();
 });
-
-// habilitar bodyParser para leer datos del formulario
-app.use(bodyParser.urlencoded({extended: true}));
 
 // agregamos las rutas
 app.use('/', routes());

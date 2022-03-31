@@ -9,6 +9,9 @@ const { body } = require('express-validator');
 
 // importamos el controlador
 const proyectosController = require('../controllers/proyectoController');
+const tareasController = require('../controllers/tareasController');
+const usuariosController = require('../controllers/usuariosController');
+
 module.exports = function(){
 	//Ruta para el home
 	router.get('/', proyectosController.proyectosHome);
@@ -27,6 +30,23 @@ module.exports = function(){
 	router.post('/nuevo-proyecto/:id',
 		body('nombre').not().isEmpty().trim().escape(), // validadmos que no este vacio, trim elimina espacios en blanco al inicio y al final. escape pone formato a los simbolos <>
 		proyectosController.actualizarProyecto); 
+
+	// eliminar proyecto
+	router.delete('/proyectos/:url', proyectosController.eliminarProyecto);
+
+	// Tareas
+	router.post('/proyectos/:url', tareasController.agregarTarea);
+
+	// Actualizar tarea
+	router.patch('/tareas/:id', tareasController.cambiarEstadoTarea);
 	
+	// Eliminar tarea
+	router.delete('/tareas/:id', tareasController.eliminarTarea);
+
+	// Rutas para los usuarios
+	// Crear nueva cuenta
+	router.get('/crear-cuenta', usuariosController.formCrearCuenta);
+	router.post('/crear-cuenta', usuariosController.crearCuenta);
+
 	return router;
 }
