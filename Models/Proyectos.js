@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../config/db');
+const Usuarios = require('../Models/Ususarios');
 
 const slug = require('slug');          // elimina espacios en blanco y agrega guiones medios
 const shortid = require('shortid');    // agrega texto aleatoria a una cadena
@@ -22,5 +23,7 @@ const Proyectos = db.define('proyectos',{
 		}
 	}
 });
+
+Proyectos.belongsTo(Usuarios);
 
 module.exports = Proyectos;

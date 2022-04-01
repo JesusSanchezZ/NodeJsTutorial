@@ -24,6 +24,15 @@
 // Instalamos paqueteria para poder visualizar los errores mandados por flash
 // npm install --save cookie-parser express-session
 
+// Instalamos passport para controlar el inicio de sesion de los usuarios
+// npm install --save passport
+// npm i --save passport-local
+
+// creación de formulario para reestablecer el password
+
+// Instalación de paquetes para mandar email
+// npm i --save nodemailer juice html-to-text
+
 //import express from 'express';
 const express = require('express');
 const routes = require('./routes');
@@ -33,6 +42,7 @@ const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const passport = require('./config/passport');
 
 // helpers con algunas funciones
 const helpers = require('./helpers');
@@ -85,22 +95,27 @@ app.use(session({
 	secret: 'supersecreto',
 	resave: false,
 	saveUninitialized: false
-}))
+}));
+
+// Autenticación de los usuarios, para acceder a las páginas apropiadas
+app.use(passport.initialize());
+app.use(passport.session());
 
 // pasar var dump a la aplicación
 app.use((req, res, next) => {
-	res.locals.vardump = helpers.vardump;     // creación de variable localName
-	res.locals.mensajes = req.flash();        // Variable local para almacenar mensajes
+	res.locals.vardump = helpers.vardump;         // creación de variable localName
+	res.locals.mensajes = req.flash();            // Variable local para almacenar mensajes
+	res.locals.usuario = {...req.user} || null;   // Información del usuario logueado, en caso de no estar autenticado manda null
 	next();
 });
 
 // Aprendiendo Middleware
 
 // al ejecutar una consulta y no tener resultado con next() pasas a otro proceso
-app.use((req, res, next)=> {
+/*app.use((req, res, next)=> {
 	console.log('Yo soy middleware');
 	next();
-});
+});*/
 
 // agregamos las rutas
 app.use('/', routes());
@@ -108,3 +123,5 @@ app.use('/', routes());
 app.listen(3000);
 
 // engine template https://github.com/expressjs/express/wiki#templates-engines
+
+//require('./handlers/email');  para probar nodemailer

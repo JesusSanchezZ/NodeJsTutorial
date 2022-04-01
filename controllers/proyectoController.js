@@ -8,7 +8,11 @@ const Tareas = require('../Models/Tareas');
 // generamos las vistas 
 exports.proyectosHome = async (req,res)=>{
 	// sin engine template pug: res.send('Index');
-	const proyectos = await Proyectos.findAll();  // Consulta los registros de la tabla proyectos
+	const usuarioId = res.locals.usuario.id;
+
+	const proyectos = await Proyectos.findAll({
+		where: { usuarioId }
+	});  // Consulta los registros de la tabla proyectos
 	
 	res.render('index',{
 		nombrePagina: 'Proyectos',
@@ -17,7 +21,11 @@ exports.proyectosHome = async (req,res)=>{
 }
 
 exports.formularioProyecto = async (req, res)=>{
-	const proyectos = await Proyectos.findAll();
+	const usuarioId = res.locals.usuario.id;
+
+	const proyectos = await Proyectos.findAll({
+		where: { usuarioId }
+	});
 
 	res.render('nuevoProyecto',{
 		nombrePagina: 'Nuevo Proyecto',
@@ -32,7 +40,11 @@ exports.nuevoProyecto = async (req, res) => {
 	// validamos que tengamos algo en el input
 	const { nombre } = req.body;
 
-	const proyectos = await Proyectos.findAll();
+	const usuarioId = res.locals.usuario.id;
+
+	const proyectos = await Proyectos.findAll({
+		where: {usuarioId}
+	});
 	
 	let errores = [];
 	
@@ -52,7 +64,8 @@ exports.nuevoProyecto = async (req, res) => {
 		// inserta en la BD.
 		//console.log(slug(nombre).toLowerCase());
 		//const url = slug(nombre).toLowerCase();
-		await Proyectos.create({nombre})
+		const usuarioId = res.locals.usuario.id;                                           // Leemos el id del usuario autenticado
+		await Proyectos.create({nombre, usuarioId})
 			.then(() => console.log('Insertado Correctamente'))
 			.catch(error => console.log(error));
 		res.redirect('/');
@@ -65,12 +78,17 @@ exports.nuevoProyecto = async (req, res) => {
 
 exports.proyectoPorUrl = async (req, res, next) => {
 	// Obtenemos los proyectos
-	const proyectosPromise = Proyectos.findAll();
+	const usuarioId = res.locals.usuario.id;
+
+	const proyectosPromise = Proyectos.findAll({
+		where: { usuarioId }
+	});
 
 	//res.send(req.params.url);
 	const proyectoPromise = Proyectos.findOne({
 		where: {
-			url: req.params.url
+			url: req.params.url,
+			usuarioId
 		}
 	});
 
@@ -115,11 +133,16 @@ exports.formularioEditar = async (req, res) =>{
 	});
 	 */
 	// Buscamos todos los proyectos y los alamacenamos
-	const proyectosPromise = Proyectos.findAll();
+	const usuarioId = res.locals.usuario.id;
+
+	const proyectosPromise = Proyectos.findAll({
+		where : { usuarioId }
+	});
 	// Busca los datos del id del llamado
 	const proyectoPromise = Proyectos.findOne({
 		where: {
-			id: req.params.id
+			id: req.params.id,
+			usuarioId
 		}
 	});
 
@@ -140,8 +163,11 @@ exports.actualizarProyecto = async (req, res) => {
 	//console.log(req.body);
 	// validamos que tengamos algo en el input
 	const { nombre } = req.body;
+	const usuarioId = res.locals.usuario.id;
 
-	const proyectos = await Proyectos.findAll();
+	const proyectos = await Proyectos.findAll({
+		where : { usuarioId }
+	});
 	
 	let errores = [];
 	
@@ -163,7 +189,10 @@ exports.actualizarProyecto = async (req, res) => {
 		//const url = slug(nombre).toLowerCase();
 		await Proyectos.update(
 				{nombre: nombre},
-				{ where: { id: req.params.id }}
+				{ where: { 
+					id: req.params.id,
+					usuarioId
+				}}
 			);
 		res.redirect('/');
 	}

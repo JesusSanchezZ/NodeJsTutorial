@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../config/db');
-const Proyectos = require('../Models/Proyectos');
+//const Proyectos = require('../Models/Proyectos');
 const bcrypt = require('bcrypt-nodejs');
 const { validate } = require('webpack');
 
@@ -20,7 +20,7 @@ const Usuarios = db.define('usuarios', {
         },
         unique: {
             args: true,
-            msg: 'Usuario ya está registrado'
+            msg: '¡El Usuario ya está registrado!'
         },
         notEmpty:{
             msg: 'El email no puede ir vacío'
@@ -35,7 +35,9 @@ const Usuarios = db.define('usuarios', {
                 msg: 'El password no puede ir vacío'
             }
         }
-    }
+    },
+    token: Sequelize.STRING,
+    expiracion: Sequelize.DATE
 }, {
     hooks: {
         beforeCreate(usuario) {
@@ -45,6 +47,11 @@ const Usuarios = db.define('usuarios', {
     }
 });
 
-Usuarios.hasMany(Proyectos);
+// Métodos persnoalizados
+Usuarios.prototype.verificarPassword = function (password) {
+    return bcrypt.compareSync(password, this.password);
+}
+
+//Usuarios.hasMany(Proyectos);
 
 module.exports = Usuarios;

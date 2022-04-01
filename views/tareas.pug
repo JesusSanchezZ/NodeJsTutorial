@@ -4,6 +4,17 @@ block contenido
     .contenido-principal 
         h1 #{nombrePagina} - #{proyecto.nombre}
 
+        //if errores
+            each error in errores 
+                .alerta.error= error.texto
+        
+        if locals.mensajes 
+                .alertas 
+                    each categoria in Object.keys(locals.mensajes)
+                        each error in mensajes[categoria]
+                            .alerta(class=`${categoria}`)
+                                p= error 
+
         // TODO - Formulario aqui
         form.agregar-tarea(action=`/proyectos/${proyecto.url}` method='POST')
             .campo 
